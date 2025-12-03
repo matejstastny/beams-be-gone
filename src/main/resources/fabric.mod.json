@@ -8,12 +8,13 @@
   "contact": {
     "repo": "https://github.com/matejstastny/beams-be-gone"
   },
+  "custom": { "loom:refmap": "bbg.refmap.json" },
   "license": "MIT",
   "icon": "assets/bbg/icon.png",
   "environment": "*",
   "mixins": ["bbg.mixins.json"],
   "depends": {
     "fabricloader": ">=${loader_version}",
-    "minecraft": ">=1.21.5"
+    "minecraft": "1.21.10"
   }
 }

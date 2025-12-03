@@ -18,6 +18,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
@@ -34,16 +35,25 @@ public class BeaconBlockEntityMixin implements BeaconBlockEntityDuck {
         BeaconBlockEntityDuck.get(blockEntity).beamBeGone$setInvisiblePresent(false);
     }
 
-    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/BlockState;isOf(Lnet/minecraft/block/Block;)Z"))
-    private static boolean preventBuildCancelIfTinted(BlockState instance, Block block, Operation<Boolean> original, @Local LocalRef<BeaconBlockEntity.BeamSegment> segmentRef, @Local(argsOnly = true) BeaconBlockEntity beaconBlockEntity) {
+    @WrapOperation(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/entity/BeaconBlockEntity;level", remap = true))
+    private static boolean preventBuildCancelIfTinted(
+        BlockState instance,
+        Block block,
+        Operation<Boolean> original,
+        CallbackInfoReturnable<Boolean> cir,
+        LocalRef<BeaconBlockEntity.BeamSegment> segmentRef,
+        BeaconBlockEntity beacon,
+        World world,
+        BlockPos pos
+    ) {
         if (!instance.isIn(BeamBeGone.MAKES_BEAM_INVISIBLE)) return original.call(instance, block);
         BeaconBlockEntity.BeamSegment segment = segmentRef.get();
         BeaconBlockEntity.BeamSegment newSegment = new BeaconBlockEntity.BeamSegment(segment.getColor());
         boolean invisible = BeamSegmentDuck.get(segment).beamBeGone$isInvisible();
-        if(BeaconBlockEntityDuck.get(beaconBlockEntity).beamBeGone$isInvisiblePresent())
+        if(BeaconBlockEntityDuck.get(beacon).beamBeGone$isInvisiblePresent())
             BeamSegmentDuck.get(segment).beamBeGone$decrementHeight();
         if(!invisible)
-            BeaconBlockEntityDuck.get(beaconBlockEntity).beamBeGone$setInvisiblePresent(true);
+            BeaconBlockEntityDuck.get(beacon).beamBeGone$setInvisiblePresent(true);
         else {
             BeamSegmentDuck.get(segment).beamBeGone$incrementHeight();
             BeamSegmentDuck.get(newSegment).beamBeGone$decrementHeight();
@@ -51,7 +61,7 @@ public class BeaconBlockEntityMixin implements BeaconBlockEntityDuck {
         BeamSegmentDuck.get(newSegment).beamBeGone$setInvisible(!invisible);
 
         segmentRef.set(newSegment);
-        ((BeaconBlockEntityDuck)beaconBlockEntity).beamBeGone$getBeamBuffer().add(newSegment);
+        ((BeaconBlockEntityDuck)beacon).beamBeGone$getBeamBuffer().add(newSegment);
         return true;
     }
 
