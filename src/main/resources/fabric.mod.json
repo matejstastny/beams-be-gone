@@ -2,20 +2,16 @@
   "schemaVersion": 1,
   "id": "bbg",
   "version": "${version}",
-  "name": "Beam Be Gone",
-  "description": "turns the beacon beam invisible when passing through tinted glass",
-  "authors": [
-    "Ramixin"
-  ],
+  "name": "Beam Be Gone (forked)",
+  "description": "Turns the beacon beam invisible when passing through tinted glass",
+  "authors": ["Ramixin", "Forked by matejstastny"],
   "contact": {
-    "repo": "https://github.com/RamGemes/BeamBeGone"
+    "repo": "https://github.com/matejstastny/beams-be-gone"
   },
   "license": "MIT",
   "icon": "assets/bbg/icon.png",
   "environment": "*",
-  "mixins": [
-    "bbg.mixins.json"
-  ],
+  "mixins": ["bbg.mixins.json"],
   "depends": {
     "fabricloader": ">=${loader_version}",
     "minecraft": ">=1.21.5"
